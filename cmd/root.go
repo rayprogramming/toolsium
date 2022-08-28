@@ -8,13 +8,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rayprogramming/toolsium/lib/config"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-)
-
-const (
-	cfgFileName = ".toolsium"
-	cfgFileType = "json"
 )
 
 var (
@@ -24,33 +19,11 @@ var (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "toolsium",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) {
-	// 	cfg, err := config.LoadDefaultConfig(context.TODO())
-	// 	cfg.Credentials = aws.NewCredentialsCache(&lib.MfaProvider{})
-
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-
-	// 	client := s3.NewFromConfig(cfg)
-	// 	output, err := client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-
-	// 	for _, object := range output.Buckets {
-	// 		log.Printf("Bucket=%s", aws.ToString(object.Name))
-	// 	}
-	// },
+	Short: "A handy set of tools for developers",
+	Long: `Toolsium is desgined to allow developers to quickly access common resources they would be expected to use.
+	
+These tools can include default filters, easy access to start a session on an ec2 machine, and other features.
+`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -64,31 +37,12 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%v.%v)", cfgFileName, cfgFileType))
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is %v)", config.GetConfigDir()))
 	// Instead of profiles for now, I recommend just passing in different config files.
+
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".toolsium" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType(cfgFileType)
-		viper.SetConfigName(cfgFileName)
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	}
+	config.Configure(cfgFile)
 }

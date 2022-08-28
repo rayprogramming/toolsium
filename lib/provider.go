@@ -1,3 +1,7 @@
+/*
+Copyright © 2022 James Ray james@rayprogramming.com
+
+*/
 package lib
 
 import (
