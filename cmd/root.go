@@ -37,15 +37,12 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	confDir, err := config.GetConfigDir()
-	cobra.CheckErr(err)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is %v)", confDir))
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is %v)", config.GetConfigDir()))
 	// Instead of profiles for now, I recommend just passing in different config files.
 
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	err := config.Configure(cfgFile)
-	cobra.CheckErr(err)
+	config.Configure(cfgFile)
 }

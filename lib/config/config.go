@@ -16,29 +16,24 @@ import (
 )
 
 // Configures Toolsium based on the cfgFile path passed in.
-func Configure(cfgFile string) error { return t.Configure(cfgFile) }
-func (t *Toolsium) Configure(cfgFile string) (err error) {
-	var installDir string
+func Configure(cfgFile string) { t.Configure(cfgFile) }
+func (t *Toolsium) Configure(cfgFile string) {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		t.Config.SetConfigFile(cfgFile)
 	} else {
-		// Find installDir directory.
-		installDir, err = t.GetConfigDir()
-
 		// Search config in home directory with name ".toolsium" (without extension).
-		t.ConfigureViper(installDir)
+		t.ConfigureViper(t.GetConfigDir())
 	}
 	// If a config file is found, read it in.
 	if err := t.Config.ReadInConfig(); err == nil {
 		log.Infof("Using config file: %v", t.Config.ConfigFileUsed())
 	}
-	return
 }
 
 // Returns the current Config Directory
-func GetConfigDir() (string, error) { return t.GetConfigDir() }
-func (t *Toolsium) GetConfigDir() (path string, err error) {
+func GetConfigDir() string { return t.GetConfigDir() }
+func (t *Toolsium) GetConfigDir() (path string) {
 	if t.ConfigDir != "" {
 		path = t.ConfigDir
 	} else {
@@ -63,11 +58,9 @@ func (t *Toolsium) SetConfigDir(confDir string) (err error) {
 // Returns the current Config Directory
 //
 // TODO(JR): Change usage of cfgFileName to allow changes to name
-func GetConfigFile() (string, error) { return t.GetConfigFile() }
-func (t *Toolsium) GetConfigFile() (path string, err error) {
-	directory, err := t.GetConfigDir()
-	path = filepath.Join(directory, cfgFileName)
-	return
+func GetConfigFile() string { return t.GetConfigFile() }
+func (t *Toolsium) GetConfigFile() string {
+	return filepath.Join(t.GetConfigDir(), cfgFileName)
 }
 
 // TODO(JR): Add SetConfigFile
@@ -84,11 +77,11 @@ func (t *Toolsium) ConfigureViper(installDir string) {
 }
 
 func (t *Toolsium) createConfigDirectory() {
-	path, _ := t.GetConfigDir()
+	path := t.GetConfigDir()
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
-			log.Println(err)
+			log.Errorln(err)
 		}
 	}
 }
@@ -97,10 +90,7 @@ func (t *Toolsium) createConfigDirectory() {
 func CreateConfig() error { return t.CreateConfig() }
 func (t *Toolsium) CreateConfig() (err error) {
 	t.createConfigDirectory()
-	cfgFile, err := t.GetConfigFile()
-	if err != nil {
-		return
-	}
+	cfgFile := t.GetConfigFile()
 	log.Infof("Wrote Config to %v", cfgFile)
 	err = t.Config.WriteConfigAs(cfgFile)
 	return
