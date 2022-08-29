@@ -7,7 +7,9 @@ This is used to handle all configuration needs that toolsium might need.
 */
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Toolsium struct {
 	Config         *viper.Viper
