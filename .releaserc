@@ -39,6 +39,10 @@
                     "section": "Internal"
                   },
                   {
+                    "type": "ci",
+                    "section": "Internal"
+                  },
+                  {
                     "type": "perf",
                     "section": "Performance"
                   }
