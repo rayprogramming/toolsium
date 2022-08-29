@@ -37,7 +37,7 @@ func (t *Toolsium) GetConfigDir() (path string) {
 	if t.ConfigDir != "" {
 		path = t.ConfigDir
 	} else {
-		path = t.DefaultConfigDir()
+		path = t.DefaultConfigDirPath()
 	}
 	return
 }
@@ -49,7 +49,7 @@ func SetConfigDir(confDir string) { t.SetConfigDir(confDir) }
 func (t *Toolsium) SetConfigDir(confDir string) {
 	if _, osErr := os.Stat(confDir); os.IsNotExist(osErr) {
 		log.Infof("Provided config directory didn't exist. %v", confDir)
-		t.ConfigDir = t.DefaultConfigDir()
+		t.ConfigDir = t.DefaultConfigDirPath()
 	}
 	t.ConfigDir = confDir
 }

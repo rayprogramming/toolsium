@@ -25,7 +25,7 @@ func init() {
 func New() (t *Toolsium) {
 	t = new(Toolsium)
 	t.Config = viper.New()
-	t.ConfigDir = DefaultConfigDir()
+	t.ConfigDir = DefaultConfigDirPath()
 	t.ConfigFileName = DefaultConfigFileName()
 	return
 }
