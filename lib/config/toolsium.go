@@ -10,8 +10,9 @@ package config
 import "github.com/spf13/viper"
 
 type Toolsium struct {
-	Config    *viper.Viper
-	ConfigDir string
+	Config         *viper.Viper
+	ConfigDir      string
+	ConfigFileName string
 }
 
 var t *Toolsium
@@ -24,7 +25,8 @@ func init() {
 func New() (t *Toolsium) {
 	t = new(Toolsium)
 	t.Config = viper.New()
-	t.ConfigDir = GetDefaultConfigDir()
+	t.ConfigDir = DefaultConfigDir()
+	t.ConfigFileName = DefaultConfigFileName()
 	return
 }
 
