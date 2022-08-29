@@ -19,12 +19,13 @@ import (
 func Configure(cfgFile string) { t.Configure(cfgFile) }
 func (t *Toolsium) Configure(cfgFile string) {
 	if cfgFile != "" {
+		log.Debugf("Using custom cfgFile %v", cfgFile)
 		// Use config file from the flag.
 		t.Config.SetConfigFile(cfgFile)
-	} else {
-		// Search config in home directory with name ".toolsium" (without extension).
-		t.ConfigureViper(t.GetConfigDir())
+		t.SetConfigFileName(filepath.Base(cfgFile))
+		t.SetConfigDir(filepath.Dir(cfgFile))
 	}
+	t.configureViper()
 	// If a config file is found, read it in.
 	if err := t.Config.ReadInConfig(); err == nil {
 		log.Infof("Using config file: %v", t.Config.ConfigFileUsed())
@@ -37,7 +38,7 @@ func (t *Toolsium) GetConfigDir() (path string) {
 	if t.ConfigDir != "" {
 		path = t.ConfigDir
 	} else {
-		path = t.GetDefaultConfigDir()
+		path = t.DefaultConfigDirPath()
 	}
 	return
 }
@@ -45,53 +46,68 @@ func (t *Toolsium) GetConfigDir() (path string) {
 // Set the Current Config directory
 //
 // If it is unable to find the supplied directory, it will use the default.
-func SetConfigDir(confDir string) error { return t.SetConfigDir(confDir) }
-func (t *Toolsium) SetConfigDir(confDir string) (err error) {
+func SetConfigDir(confDir string) { t.SetConfigDir(confDir) }
+func (t *Toolsium) SetConfigDir(confDir string) {
 	if _, osErr := os.Stat(confDir); os.IsNotExist(osErr) {
-		log.Infof("Provided config directory didn't exist. %v", confDir)
-		t.ConfigDir = t.GetDefaultConfigDir()
+		log.Debugf("Provided config directory didn't exist. %v", confDir)
+		t.ConfigDir = t.DefaultConfigDirPath()
 	}
 	t.ConfigDir = confDir
+}
+
+// Set the Current Config File Name
+//
+// If it is unable to find the supplied file name, it will use the default.
+func SetConfigFileName(fileName string) { t.SetConfigFileName(fileName) }
+func (t *Toolsium) SetConfigFileName(fileName string) {
+	if fileName == "" {
+		t.ConfigFileName = t.DefaultConfigFileName()
+	}
+	t.ConfigFileName = fileName
+}
+
+// Returns the current Config Name
+func GetConfigFileName() string { return t.GetConfigFileName() }
+func (t *Toolsium) GetConfigFileName() (fileName string) {
+	if t.ConfigFileName != "" {
+		fileName = t.ConfigFileName
+	} else {
+		fileName = t.DefaultConfigFileName()
+	}
 	return
 }
 
 // Returns the current Config Directory
-//
-// TODO(JR): Change usage of cfgFileName to allow changes to name
-func GetConfigFile() string { return t.GetConfigFile() }
-func (t *Toolsium) GetConfigFile() string {
-	return filepath.Join(t.GetConfigDir(), cfgFileName)
+func GetConfigFilePath() string { return t.GetConfigFilePath() }
+func (t *Toolsium) GetConfigFilePath() string {
+	return filepath.Join(t.GetConfigDir(), t.GetConfigFileName())
 }
 
-// TODO(JR): Add SetConfigFile
-// TODO(JR): Add GetConfigPath to fetch full path and reduce GetConfigFile
-
 // Configures viper based on the provided passed directory and uses default file type and name.
-func ConfigureViper(installDir string) { t.ConfigureViper(installDir) }
-func (t *Toolsium) ConfigureViper(installDir string) {
-	t.Config.AddConfigPath(installDir)
+func (t *Toolsium) configureViper() {
+	t.Config.AddConfigPath(t.GetConfigDir())
 	t.Config.SetConfigType(cfgFileType)
-	t.Config.SetConfigName(cfgFileName)
+	t.Config.SetConfigName(t.GetConfigFileName())
 	t.Config.SetEnvPrefix(cfgPrefix)
 	t.Config.AutomaticEnv()
 }
 
+// Creates the configuration directory
 func (t *Toolsium) createConfigDirectory() {
 	path := t.GetConfigDir()
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
-			log.Errorln(err)
+			log.Fatalln(err)
 		}
 	}
 }
 
 // Writes the toolsium configuration file
 func CreateConfig() error { return t.CreateConfig() }
-func (t *Toolsium) CreateConfig() (err error) {
+func (t *Toolsium) CreateConfig() error {
 	t.createConfigDirectory()
-	cfgFile := t.GetConfigFile()
+	cfgFile := t.GetConfigFilePath()
 	log.Infof("Wrote Config to %v", cfgFile)
-	err = t.Config.WriteConfigAs(cfgFile)
-	return
+	return t.Config.WriteConfigAs(cfgFile)
 }
