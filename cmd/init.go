@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"github.com/rayprogramming/toolsium/lib/config"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -14,9 +15,14 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Setup toolsium",
 	Run: func(cmd *cobra.Command, args []string) {
+		log.Debugf("init conf path: %v", config.GetConfigFilePath())
 		err := config.CreateConfig()
 		cobra.CheckErr(err)
 	},
+}
+
+func runAWS() {
+	log.Debugln("Done running AWS command")
 }
 
 func init() {

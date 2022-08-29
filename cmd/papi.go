@@ -7,13 +7,13 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/rayprogramming/toolsium/lib"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,7 @@ to quickly create a Cobra application.`,
 		cfg.Credentials = aws.NewCredentialsCache(&lib.MfaProvider{})
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 
 		client := ec2.NewFromConfig(cfg)

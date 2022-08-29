@@ -5,8 +5,7 @@ Copyright © 2022 James Ray james@rayprogramming.com
 package cmd
 
 import (
-	"log"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )
@@ -18,7 +17,7 @@ var docsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := doc.GenMarkdownTree(rootCmd, "./docs")
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 	},
 }

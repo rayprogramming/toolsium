@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/rayprogramming/toolsium/lib/config"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -44,5 +45,6 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	log.Debugf("cfgFile: %v", cfgFile)
 	config.Configure(cfgFile)
 }

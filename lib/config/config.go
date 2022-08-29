@@ -19,6 +19,7 @@ import (
 func Configure(cfgFile string) { t.Configure(cfgFile) }
 func (t *Toolsium) Configure(cfgFile string) {
 	if cfgFile != "" {
+		log.Debugf("Using custom cfgFile %v", cfgFile)
 		// Use config file from the flag.
 		t.Config.SetConfigFile(cfgFile)
 	} else {
@@ -48,7 +49,7 @@ func (t *Toolsium) GetConfigDir() (path string) {
 func SetConfigDir(confDir string) { t.SetConfigDir(confDir) }
 func (t *Toolsium) SetConfigDir(confDir string) {
 	if _, osErr := os.Stat(confDir); os.IsNotExist(osErr) {
-		log.Infof("Provided config directory didn't exist. %v", confDir)
+		log.Debugf("Provided config directory didn't exist. %v", confDir)
 		t.ConfigDir = t.DefaultConfigDirPath()
 	}
 	t.ConfigDir = confDir
@@ -98,7 +99,7 @@ func (t *Toolsium) createConfigDirectory() {
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
-			log.Errorln(err)
+			log.Fatalln(err)
 		}
 	}
 }

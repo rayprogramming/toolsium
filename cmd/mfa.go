@@ -7,11 +7,11 @@ package cmd
 import (
 	"context"
 	"errors"
-	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -38,7 +38,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.LoadDefaultConfig(context.TODO())
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 
 		client := sts.NewFromConfig(cfg)
@@ -48,11 +48,11 @@ to quickly create a Cobra application.`,
 		}
 		tokenOutput, err := client.GetSessionToken(context.TODO(), &sessionTokenInput)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 		viper.Set("session", tokenOutput)
 		if err := viper.WriteConfig(); err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
 	},
 }
