@@ -39,7 +39,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is [$HOME/%%USERPROFILE%%]/%v)", config.DefaultConfigDir()))
-	// Instead of profiles for now, I recommend just passing in different config files.
+	// TODO(JR): Build a flag for AWS profile
 
 }
 
