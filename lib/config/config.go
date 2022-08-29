@@ -22,10 +22,10 @@ func (t *Toolsium) Configure(cfgFile string) {
 		log.Debugf("Using custom cfgFile %v", cfgFile)
 		// Use config file from the flag.
 		t.Config.SetConfigFile(cfgFile)
-	} else {
-		// Search config in home directory with name ".toolsium" (without extension).
-		t.ConfigureViper()
+		t.SetConfigFileName(filepath.Base(cfgFile))
+		t.SetConfigDir(filepath.Dir(cfgFile))
 	}
+	t.configureViper()
 	// If a config file is found, read it in.
 	if err := t.Config.ReadInConfig(); err == nil {
 		log.Infof("Using config file: %v", t.Config.ConfigFileUsed())
@@ -84,8 +84,7 @@ func (t *Toolsium) GetConfigFilePath() string {
 }
 
 // Configures viper based on the provided passed directory and uses default file type and name.
-func ConfigureViper() { t.ConfigureViper() }
-func (t *Toolsium) ConfigureViper() {
+func (t *Toolsium) configureViper() {
 	t.Config.AddConfigPath(t.GetConfigDir())
 	t.Config.SetConfigType(cfgFileType)
 	t.Config.SetConfigName(t.GetConfigFileName())
